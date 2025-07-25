@@ -5038,3 +5038,43 @@ NTSTATUS PhTerminateWindow(
 
     return PhGetLastWin32ErrorAsNtStatus();
 }
+
+/**
+ * Retrieves the source of the input message.
+ *
+ * \param InputMessageSource The INPUT_MESSAGE_SOURCE that holds the device type and the ID of the input message source.
+ * \return NTSTATUS Successful or errant status.
+ * \sa https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcurrentinputmessagesource
+ */
+NTSTATUS PhGetInputMessageSource(
+    _Out_ INPUT_MESSAGE_SOURCE* InputMessageSource
+    )
+{
+    if (!GetCurrentInputMessageSource_Import())
+        return STATUS_PROCEDURE_NOT_FOUND;
+
+    if (GetCurrentInputMessageSource_Import()(InputMessageSource))
+        return STATUS_SUCCESS;
+
+    return PhGetLastWin32ErrorAsNtStatus();
+}
+
+/**
+ * Retrieves the source of the input message (GetCurrentInputMessageSourceInSendMessage).
+ *
+ * \param InputMessageSource The INPUT_MESSAGE_SOURCE that holds the device type and the ID of the input message source.
+ * \return NTSTATUS Successful or errant status.
+ * \sa https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getcimssm
+ */
+NTSTATUS PhGetInputMessageSourceSM(
+    _Out_ INPUT_MESSAGE_SOURCE* InputMessageSource
+    )
+{
+    if (!GetCIMSSM_Import())
+        return STATUS_PROCEDURE_NOT_FOUND;
+
+    if (GetCIMSSM_Import()(InputMessageSource))
+        return STATUS_SUCCESS;
+
+    return PhGetLastWin32ErrorAsNtStatus();
+}

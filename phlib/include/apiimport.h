@@ -83,6 +83,8 @@ PH_DECLARE_IMPORT(GetAppContainerFolderPath);
 // User32
 
 PH_DECLARE_IMPORT(ConsoleControl);
+PH_DECLARE_IMPORT(GetCurrentInputMessageSource);
+PH_DECLARE_IMPORT(GetCIMSSM);
 
 // Xmllite
 
