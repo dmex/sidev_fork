@@ -1520,3 +1520,59 @@ PPH_STRING PhGetAzureDirectoryObjectSid(
 
     return NULL;
 }
+
+NTSTATUS PhQueryLocalSystemAccess(
+    _In_ PSID AccountSid,
+    _Out_ PULONG SystemAccessLocal
+    )
+{
+    static PH_INITONCE initOnce = PH_INITONCE_INIT;
+    static typeof(&LsaQueryLocalSystemAccess) LsaQueryLocalSystemAccess_I = NULL;
+    ULONG systemAccessLocal = 0;
+    NTSTATUS status;
+
+    if (PhBeginInitOnce(&initOnce))
+    {
+        LsaQueryLocalSystemAccess_I = PhGetDllProcedureAddress(L"sechost.dll", "LsaQueryLocalSystemAccess", 0);
+        PhEndInitOnce(&initOnce);
+    }
+
+    if (!LsaQueryLocalSystemAccess_I)
+        return STATUS_UNSUCCESSFUL;
+
+    status = LsaQueryLocalSystemAccess_I(
+        AccountSid,
+        &systemAccessLocal
+        );
+
+    if (NT_SUCCESS(status))
+    {
+        *SystemAccessLocal = systemAccessLocal;
+    }
+
+    return status;
+}
+
+NTSTATUS PhQueryLocalSystemAccessAll(
+    _Outptr_result_nullonfailure_ PLSA_LOCAL_ACCESSRIGHT_ASSIGNMENTS* LocalAccessRightAssignments
+    )
+{
+    static PH_INITONCE initOnce = PH_INITONCE_INIT;
+    static typeof(&LsaQueryLocalSystemAccessAll) LsaQueryLocalSystemAccessAll_I = NULL;
+    NTSTATUS status;
+
+    if (PhBeginInitOnce(&initOnce))
+    {
+        LsaQueryLocalSystemAccessAll_I = PhGetDllProcedureAddress(L"sechost.dll", "LsaQueryLocalSystemAccessAll", 0);
+        PhEndInitOnce(&initOnce);
+    }
+
+    if (!LsaQueryLocalSystemAccessAll_I)
+        return STATUS_UNSUCCESSFUL;
+
+    status = LsaQueryLocalSystemAccessAll_I(
+        LocalAccessRightAssignments
+        );
+
+    return status;
+}
